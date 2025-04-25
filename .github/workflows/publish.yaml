@@ -97,10 +97,10 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1 # Use release version tag
         with:
           repository-url: https://test.pypi.org/legacy/
+          verbose: true
           # packages-dir implicitly defaults to dist/ if path above is dist/
-          # verbose: true # Add for more detailed output if debugging
 
-  # --- Optional but Recommended: Create GitHub Release ---
+  # --- Create GitHub Release ---
   create-release:
     name: Create GitHub Release 📝
     needs: [build, provenance, publish-testpypi] # Wait for build, provenance, and successful TestPyPI publish
@@ -153,7 +153,8 @@ jobs:
 
       - name: Publish package distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          verbose: true
         # No repository-url needed, defaults to PyPI
         # packages-dir implicitly defaults to dist/
-        # verbose: true # Add for more detailed output if debugging
         
