@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.13', '3.12', '3.11', '3.10', '3.9']
+        python: ['3.13', '3.12', '3.11', '3.10']
         include:
           - {name: Windows, python: '3.12', os: windows-latest}
           - {name: Mac, python: '3.12', os: macos-latest}
@@ -47,7 +47,6 @@ jobs:
       - name: Install test dependencies
         run: pip install "dorans[test]"
 
-      # Explicitly point pytest to the tests directory.
       - name: Run tests against installed package
         run: |
-            python -m pytest -vs ${{ github.workspace }}/tests
+            python -m pytest -vs
