@@ -17,8 +17,6 @@ jobs:
   build:
     name: Build distribution 📦
     runs-on: ubuntu-latest
-    permissions:
-      contents: write  # Required for uploading artifacts
     outputs:
       hashes: ${{ steps.hash.outputs.hashes }}
 
@@ -64,14 +62,13 @@ jobs:
           path: dist/
           retention-days: 7 # Adjust as needed
 
-  # --- Optional but Recommended: Provenance ---
   provenance:
     name: Generate SLSA Provenance 🛡️
     needs: [build]
     permissions:
       actions: read       # To read workflow path.
       id-token: write     # To sign the provenance.
-      contents: read      # To read repository contents.
+      contents: write     # To write the provenance to the repository.
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.0.0
     with:
       base64-subjects: ${{ needs.build.outputs.hashes }}
