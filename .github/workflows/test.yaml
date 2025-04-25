@@ -47,7 +47,6 @@ jobs:
       - name: Install test dependencies
         run: pip install "dorans[test]"
 
-      # Explicitly point pytest to the tests directory.
       - name: Run tests against installed package
         run: |
-            python -m pytest -vs ${{ github.workspace }}/tests
+            python -m pytest -vs
