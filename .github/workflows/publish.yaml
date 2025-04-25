@@ -131,7 +131,7 @@ jobs:
               --notes "Automated release for $RELEASE_TAG" \
               --draft \
               python-package-distributions/* \
-              *.intoto.jsonl
+              */*.intoto.jsonl
 
   # --- Publish to Main PyPI ---
   publish-pypi:
@@ -156,3 +156,4 @@ jobs:
         # No repository-url needed, defaults to PyPI
         # packages-dir implicitly defaults to dist/
         # verbose: true # Add for more detailed output if debugging
+        
