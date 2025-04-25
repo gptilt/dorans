@@ -10,15 +10,13 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false
 
-permissions: read # Default read permissions
+permissions:
+  contents: read # Default read permissions
 
 jobs:
   build:
     name: Build distribution 📦
     runs-on: ubuntu-latest
-    permissions:
-      contents: read # Needed to check out the code
-      # id-token: write # Potentially needed if hatch uses git for versioning during build AND needs to auth
     outputs:
       hashes: ${{ steps.hash.outputs.hashes }}
 
