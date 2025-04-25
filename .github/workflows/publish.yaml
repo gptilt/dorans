@@ -1,85 +1,161 @@
-name: Publish
+name: Publish Python Package
+
 on:
   push:
     branches:
-      - release
-  workflow_dispatch:
+      - release # Trigger on pushes to the release branch
+  workflow_dispatch: # Allow manual triggering
 
 concurrency:
-  group: publish
-  cancel-in-progress: false  # Ensures every run completes (prevents skipping commits)
-  
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions: read # Default read permissions
+
 jobs:
   build:
+    name: Build distribution 📦
     runs-on: ubuntu-latest
+    permissions:
+      contents: read # Needed to check out the code
+      # id-token: write # Potentially needed if hatch uses git for versioning during build AND needs to auth
     outputs:
-      hash: ${{ steps.hash.outputs.hash }}
+      hashes: ${{ steps.hash.outputs.hashes }}
+
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
+      - name: Checkout repository
+        uses: actions/checkout@v4 # Recommended to use major version tags
         with:
-          python-version: '3.x'
+          # Fetch all history for versioning tools like setuptools_scm or hatch-vcs if needed
+          fetch-depth: 0 
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x' # Use a specific version range or matrix if needed
           cache: pip
-      - run: pip install build
+          cache-dependency-path: '**/requirements*.txt' # Cache based on requirements files
 
-      # Use the commit date instead of the current date during the build.
-      - run: echo "SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)" >> $GITHUB_ENV
-      - run: python -m build
+      - name: Install build dependencies
+        run: pip install build hatchling # Explicitly install build and hatchling
+        # Or if you prefer using requirements file:
+        # run: pip install -r requirements/build.txt 
 
-      # Generate hashes used for provenance.
-      - name: generate hash
+      - name: Set SOURCE_DATE_EPOCH for reproducible builds
+        run: echo "SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)" >> $GITHUB_ENV
+
+      - name: Build artifacts
+        run: python -m build
+
+      - name: Generate hashes for built artifacts
         id: hash
-        run: cd dist && echo "hash=$(sha256sum * | base64 -w0)" >> $GITHUB_OUTPUT
-      - uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
-        with:
-            name: dist
-            path: ./dist
+        # Need write permission if using git-based versioning that writes tags during build
+        # permissions: 
+        #  contents: write 
+        run: |
+          cd dist
+          echo "hashes=$(sha256sum * | base64 -w0)" >> "$GITHUB_OUTPUT"
+          cd ..
 
+      - name: Store built artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-package-distributions # More descriptive name
+          path: dist/
+          retention-days: 7 # Adjust as needed
+
+  # --- Optional but Recommended: Provenance ---
   provenance:
+    name: Generate SLSA Provenance 🛡️
     needs: [build]
     permissions:
-      actions: read
-      id-token: write
-      contents: write
-    # Can't pin with hash due to how this workflow works.
+      actions: read       # To read workflow path.
+      id-token: write     # To sign the provenance.
+      contents: read      # To read repository contents.
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.0.0
     with:
-      base64-subjects: ${{ needs.build.outputs.hash }}
+      base64-subjects: ${{ needs.build.outputs.hashes }}
+      # upload-assets: true # Optional: Upload provenance to the release assets
+      # build-artifact-path: python-package-distributions # Optional: Point to the artifact if needed by specific generator versions
 
-  create-release:
-    # Upload the sdist, wheels, and provenance to a GitHub release. They remain
-    # available as build artifacts for a while as well.
-    needs: [provenance]
+  # --- Publish to TestPyPI ---
+  publish-testpypi:
+    name: Publish to TestPyPI 🧪
+    needs: [build] # Depends only on having the artifacts built
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
-        with:
-            name: dist
-            path: dist
-      - name: create release
-        run: >
-          gh release create --draft --repo ${{ github.repository }} ${{ github.ref_name }} *.intoto.jsonl/* dist/*
-        env:
-          GH_TOKEN: ${{ github.token }}
-
-  publish-pypi:
-    needs: [provenance]
-    # Wait for approval before attempting to upload to PyPI. This allows reviewing the
-    # files in the draft release.
     environment:
-      name: publish
-      url: https://pypi.org/project/dorans/${{ github.ref_name }}
-    runs-on: ubuntu-latest
+      name: testpypi # Optional: Define a 'testpypi' environment if needed for specific rules/secrets
+      url: https://test.pypi.org/p/dorans # Update 'dorans' if your package name is different
     permissions:
-      id-token: write
+      id-token: write # IMPORTANT: Required for trusted publishing
+
     steps:
-      - uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
-      - uses: pypa/gh-action-pypi-publish@f7600683efdcb7656dec5b29656edb7bc586e597 # v1.10.3
+      - name: Download built artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: python-package-distributions # Match artifact name from build job
+          path: dist/ # Download directly into dist/
+
+      - name: Publish package distributions to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1 # Use release version tag
         with:
           repository-url: https://test.pypi.org/legacy/
-          packages-dir: dist
-      - uses: pypa/gh-action-pypi-publish@f7600683efdcb7656dec5b29656edb7bc586e597 # v1.10.3
+          # packages-dir implicitly defaults to dist/ if path above is dist/
+          # verbose: true # Add for more detailed output if debugging
+
+  # --- Optional but Recommended: Create GitHub Release ---
+  create-release:
+    name: Create GitHub Release 📝
+    needs: [build, provenance, publish-testpypi] # Wait for build, provenance, and successful TestPyPI publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # To create the release
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        # Downloads all artifacts produced by previous jobs into respective directories
+        # (e.g., python-package-distributions/, SLSA-provenance-*.intoto.jsonl/)
+
+      - name: Create Draft Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          # Extract version tag from the ref (e.g., refs/tags/v1.0.0 -> v1.0.0)
+          # Handle potential 'v' prefix if necessary depending on your tagging scheme
+          RELEASE_TAG: ${{ github.ref_name }} 
+        run: |
+          echo "Creating release for tag $RELEASE_TAG"
+          # Ensure artifact directory structure is handled correctly
+          # The downloaded artifacts might be in subdirectories based on their upload names
+          # Adjust the glob patterns as needed
+          gh release create "$RELEASE_TAG" \
+              --repo "$GITHUB_REPOSITORY" \
+              --title "Release $RELEASE_TAG" \
+              --notes "Automated release for $RELEASE_TAG" \
+              --draft \
+              python-package-distributions/* \
+              *.intoto.jsonl
+
+  # --- Publish to Main PyPI ---
+  publish-pypi:
+    name: Publish to PyPI 🐍
+    needs: [create-release] # Depends on release creation (which depends on build, provenance, testpypi)
+    runs-on: ubuntu-latest
+    environment:
+      name: publish # Your existing environment, potentially with approvers
+      url: https://pypi.org/p/dorans # Update 'dorans' if needed
+    permissions:
+      id-token: write # IMPORTANT: Required for trusted publishing
+
+    steps:
+      - name: Download built artifacts
+        uses: actions/download-artifact@v4
         with:
-          packages-dir: dist
+          name: python-package-distributions # Match artifact name from build job
+          path: dist/
+
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        # No repository-url needed, defaults to PyPI
+        # packages-dir implicitly defaults to dist/
+        # verbose: true # Add for more detailed output if debugging
