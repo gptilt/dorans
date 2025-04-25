@@ -98,7 +98,6 @@ jobs:
         with:
           repository-url: https://test.pypi.org/legacy/
           verbose: true
-          skip-existing: true  # Skip if already published
 
   # --- Create GitHub Release ---
   create-release:
