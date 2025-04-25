@@ -1,0 +1,24 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "dorans"
+version = "0.1.0"
+readme = "README.md"
+description = "Utilities for the League of Legends Community"
+license = {file = "LICENSE"}
+requires-python = ">=3.11"
+dependencies = [
+    "polars >=0.18.0",
+    "tqdm >= 4.65.0",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest >=2.7.3",
+]
+
+[tool.hatch.build]
+include = ["src/**"]
+sources = ["src"]
