@@ -1,0 +1,53 @@
+name: Test
+
+on:
+  pull_request:
+    branches:
+      - test
+
+jobs:
+  tests:
+    name: "Py${{ matrix.python }} - ${{ matrix.os || 'Ubuntu' }}"
+    runs-on: ${{ matrix.os || 'ubuntu-latest' }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.13', '3.12', '3.11', '3.10', '3.9']
+        include:
+          - {name: Windows, python: '3.12', os: windows-latest}
+          - {name: Mac, python: '3.12', os: macos-latest}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+          allow-prereleases: true
+          cache: 'pip' # Cache dependencies installed by pip (including hatch itself)
+          cache-dependency-path: 'pyproject.toml' # Key the cache on your project file
+
+      - name: Install Hatch
+        run: pip install hatch
+
+      - name: Build package wheel
+        run: hatch build --target wheel # Only build the wheel artifact
+
+      # This installs the package from the built wheel
+      # into the Python environment's site-packages directory.
+      - name: Install built wheel
+        run: pip install dist/*.whl
+
+      # Since we installed the package from the wheel, we now need
+      # to install pytest (and any other test dependencies) directly.
+      # We use the [test] extra defined in pyproject.toml for consistency.
+      - name: Install test dependencies
+        run: pip install "dorans[test]"
+
+      # Explicitly point pytest to the tests directory.
+      - name: Run tests against installed package
+        run: |
+            python -m pytest -vs ${{ github.workspace }}/tests
