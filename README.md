@@ -45,7 +45,7 @@ print(xp.from_event(
 
 ## Contributing
 
-Contributions are welcome! If you have ideas for new utilities, find bugs, or want to improve existing code, please feel free to open an issue or submit a pull request on the GitHub repository. 
+Contributions are welcome! If you have ideas for new utilities, find bugs, or want to improve existing code, please feel free to open an issue or submit a pull request on the GitHub repository.
 
 ## License
 
