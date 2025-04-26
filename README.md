@@ -16,7 +16,7 @@ For now, here's what you can get:
 
 * **Champion Experience (XP):** Functions to calculate champion level, XP gained from event, etc.
 
-Future additions may include utilities for gold calculation, damage analysis, and more.
+Future additions may include utilities for gold calculation, damage analysis, and more!
 
 ## Getting Started
 
