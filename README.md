@@ -43,6 +43,10 @@ print(xp.from_event(
 # Output: 134.0
 ```
 
+## Contributing
+
+Contributions are welcome! If you have ideas for new utilities, find bugs, or want to improve existing code, please feel free to open an issue or submit a pull request on the GitHub repository. 
+
 ## License
 
 All datasets are licensed under the [Creative Commons Attribution-NonCommercial 4.0 International License (CC BY-NC 4.0)](https://creativecommons.org/licenses/by-nc/4.0/).
