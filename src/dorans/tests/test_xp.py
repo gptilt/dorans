@@ -1,4 +1,4 @@
-from champion import xp
+from dorans import xp
 import pytest
 
 

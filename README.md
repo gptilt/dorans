@@ -4,7 +4,7 @@
 [![Publish](https://github.com/gptilt/dorans/actions/workflows/publish.yaml/badge.svg)](https://github.com/gptilt/dorans/actions/workflows/publish.yaml)
 [![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC_BY--NC_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc/4.0/)
 
-[GPTilt's](https://huggingface.co/gptilt) library of tools and calculations for working with League of Legends data.
+[GPTilt's](https://github.com/gptilt) library of tools and calculations for working with League of Legends data.
 
 Named after the essential Doran's starting items, this package provides the foundational formulas as described in the [League of Legends Wiki](https://wiki.leagueoflegends.com/).
 
