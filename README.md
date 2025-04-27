@@ -15,6 +15,7 @@ Named after the essential Doran's starting items, this package provides the foun
 For now, here's what you can get:
 
 * **Champion Experience (XP):** Functions to calculate champion level, XP gained from event, etc.
+* **Death Timer:** Function that computes the death timer from champion level and the game minutes.
 
 Future additions may include utilities for gold calculation, damage analysis, and more!
 
