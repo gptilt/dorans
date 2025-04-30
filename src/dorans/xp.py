@@ -24,6 +24,7 @@ PER_KILL_OR_ASSIST = {
 
 PER_DRAGON_LEVEL = lambda i: 30 + i * 20 if i < 15 else 330
 PER_ELDER_DRAGON_LEVEL = lambda i: 530 + i * 20 if i < 15 else 830
+PER_GRUB_LEVEL = lambda i: 75 * 1.02 ** (i - 4)  # 2% increase per level over 4
 PER_RIFT_HERALD_LEVEL = lambda i: 306 if i < 8 else 312  # Simplification
 
 
@@ -76,6 +77,22 @@ def takedown_multiplier(
         return 1.0
 
 
+def handle_key_error(func):
+    """
+    Decorator to handle KeyError exceptions.
+    :param func: The function to decorate.
+    :return: The decorated function.
+    """
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except KeyError as e:
+            raise ValueError(f"Missing required argument: {e}")
+
+    return wrapper
+
+
+@handle_key_error
 def from_event(
     event: str,
     **kwargs: dict[str, int]
@@ -102,18 +119,35 @@ def from_event(
                 / kwargs["number_of_assists"]
             )
         case "dragon":
+            """
+            TODO: From the Wiki:
+            "If the team that slays a dragon has a lower average level
+            than that of their opponents,
+            they receive 25% bonus experience per average level difference.
+            The bonus experience is sharply increased
+            for the lowest level members of the team,
+            equal to 15% per number of levels behind the dragon squared,
+            up to a maximum of 200%."
+            """
             dragon_level = kwargs["dragon_level"]
             return PER_DRAGON_LEVEL(dragon_level)
         case "elder_dragon":
             elder_dragon_level = kwargs["elder_dragon_level"]
             return PER_ELDER_DRAGON_LEVEL(elder_dragon_level)
+        case "grub":
+            # The Grub's level is the average of the two teams' levels
+            # at any point in the game
+            grub_level = kwargs["grub_level"]
+            return PER_GRUB_LEVEL(grub_level)
         case "rift_herald":
             # The Rift Herald's level is the average of the two teams' levels
             # when she spawns at 14 minutes
             rift_herald_level = kwargs["rift_herald_level"]
             return PER_RIFT_HERALD_LEVEL(rift_herald_level)
         case "baron":
-            is_within_2000_units = kwargs.get("is_within_2000_units", False)
+            is_within_2000_units = kwargs["is_within_2000_units"]
             return 1400 if is_within_2000_units == True else 600
+        case "control_ward":
+            return 38  # Simplification: players can get assist XP from control wards 
         case _:
             raise ValueError(f"Unknown event: {event}")
