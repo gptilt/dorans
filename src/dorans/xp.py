@@ -77,77 +77,103 @@ def takedown_multiplier(
         return 1.0
 
 
-def handle_key_error(func):
+def from_kill(
+    champion_level: int,
+    enemy_level: int,
+):
     """
-    Decorator to handle KeyError exceptions.
-    :param func: The function to decorate.
-    :return: The decorated function.
+    Get the XP from a kill.
+    :param champion_level: The level of the champion participating in the kill.
+    :param enemy_level: The level of the enemy.
+    :return: The XP for the kill.
     """
-    def wrapper(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except KeyError as e:
-            raise ValueError(f"Missing required argument: {e}")
+    return (
+        PER_KILL_OR_ASSIST[enemy_level][0]
+        * takedown_multiplier(champion_level, enemy_level)
+    )
 
-    return wrapper
+def from_assist(
+    champion_level: int,
+    enemy_level: int,
+    number_of_assists: int
+):
+    """
+    Get the XP from an assist.
+    :param champion_level: The level of the champion participating in the assist.
+    :param enemy_level: The level of the enemy.
+    :param number_of_assists: The number of assists.
+    :return: The XP for the assist.
+    """
+    return (
+        PER_KILL_OR_ASSIST[enemy_level][1]
+        * takedown_multiplier(champion_level, enemy_level)
+        / number_of_assists
+    )
 
 
-@handle_key_error
-def from_event(
-    event: str,
-    **kwargs: dict[str, int]
-) -> int:
+def from_dragon(dragon_level: int):
     """
-    Get the XP from the given event.
-    :param event: The event to get the XP for.
-    :return: The XP for the given event.
+    Get the XP from a dragon.
+    :param dragon_level: The level of the dragon.
+    :return: The XP for the dragon.
+
+    TODO: From the Wiki:
+    "If the team that slays a dragon has a lower average level
+    than that of their opponents,
+    they receive 25% bonus experience per average level difference.
+    The bonus experience is sharply increased
+    for the lowest level members of the team,
+    equal to 15% per number of levels behind the dragon squared,
+    up to a maximum of 200%."
     """
-    match event:
-        case "kill":
-            champion_level = kwargs["champion_level"]
-            enemy_level = kwargs["enemy_level"]
-            return (
-                PER_KILL_OR_ASSIST[enemy_level][0]
-                * takedown_multiplier(champion_level, enemy_level)
-            )
-        case "assist":
-            champion_level = kwargs["champion_level"]
-            enemy_level = kwargs["enemy_level"]
-            return (
-                PER_KILL_OR_ASSIST[enemy_level][1]
-                * takedown_multiplier(champion_level, enemy_level)
-                / kwargs["number_of_assists"]
-            )
-        case "dragon":
-            """
-            TODO: From the Wiki:
-            "If the team that slays a dragon has a lower average level
-            than that of their opponents,
-            they receive 25% bonus experience per average level difference.
-            The bonus experience is sharply increased
-            for the lowest level members of the team,
-            equal to 15% per number of levels behind the dragon squared,
-            up to a maximum of 200%."
-            """
-            dragon_level = kwargs["dragon_level"]
-            return PER_DRAGON_LEVEL(dragon_level)
-        case "elder_dragon":
-            elder_dragon_level = kwargs["elder_dragon_level"]
-            return PER_ELDER_DRAGON_LEVEL(elder_dragon_level)
-        case "grub":
-            # The Grub's level is the average of the two teams' levels
-            # at any point in the game
-            grub_level = kwargs["grub_level"]
-            return PER_GRUB_LEVEL(grub_level)
-        case "rift_herald":
-            # The Rift Herald's level is the average of the two teams' levels
-            # when she spawns at 14 minutes
-            rift_herald_level = kwargs["rift_herald_level"]
-            return PER_RIFT_HERALD_LEVEL(rift_herald_level)
-        case "baron":
-            is_within_2000_units = kwargs["is_within_2000_units"]
-            return 1400 if is_within_2000_units == True else 600
-        case "control_ward":
-            return 38  # Simplification: players can get assist XP from control wards 
-        case _:
-            raise ValueError(f"Unknown event: {event}")
+    return PER_DRAGON_LEVEL(dragon_level)
+
+
+def from_elder_dragon(elder_dragon_level: int):
+    """
+    Get the XP from an elder dragon.
+    :param elder_dragon_level: The level of the elder dragon.
+    :return: The XP for the elder dragon.
+    """
+    return PER_ELDER_DRAGON_LEVEL(elder_dragon_level)
+
+
+def from_grub(grub_level: int):
+    """
+    Get the XP from a grub.
+    :param grub_level: The level of the grub.
+        The Grub's level is the average of
+        the two teams' levels at any point in the game.
+    :return: The XP for the grub.
+    """
+    return PER_GRUB_LEVEL(grub_level)
+
+
+def from_rift_herald(rift_herald_level: int):
+    """
+    Get the XP from a rift herald.
+    :param rift_herald_level: The level of the rift herald.
+        The Rift Herald's level is the average of
+        the two teams' levels when she spawns at 14 minutes.
+    :return: The XP for the rift herald.
+    """
+    return PER_RIFT_HERALD_LEVEL(rift_herald_level)
+
+
+def from_baron(
+    is_within_2000_units: bool
+):
+    """
+    Get the XP from a baron.
+    :param is_within_2000_units: Whether the champion is within 2000 units of the baron.
+    :return: The XP for the baron.
+    """
+    return 1400 if is_within_2000_units == True else 600
+
+
+def from_control_ward():
+    """
+    Get the XP from a control ward.
+    :return: The XP for the control ward.
+    """
+    return 38.0  # Simplification: players can get assist XP from control wards
