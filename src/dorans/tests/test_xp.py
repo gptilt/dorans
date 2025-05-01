@@ -20,27 +20,22 @@ def test_total_from_level_raises_out_of_bounds():
         xp.total_from_level(19)
 
 
-def test_from_event_kill_and_assist_return_positive():
-    kill_xp = xp.from_event("kill", champion_level=6, enemy_level=6)
-    assist_xp = xp.from_event("assist", champion_level=6, enemy_level=6, number_of_assists=2)
+def test_from_kill_and_assist_return_positive():
+    kill_xp = xp.from_kill(champion_level=6, enemy_level=6)
+    assist_xp = xp.from_assist(champion_level=6, enemy_level=6, number_of_assists=2)
     
     assert kill_xp > 0
     assert assist_xp > 0
     assert kill_xp > assist_xp
 
 
-def test_from_event_dragon_returns_positive_xp():
-    _xp = xp.from_event("dragon", dragon_level=5)
+def test_from_dragon_returns_positive_xp():
+    _xp = xp.from_dragon(dragon_level=5)
     assert _xp > 0
 
 
-def test_from_event_baron_distance_effect():
-    near = xp.from_event("baron", is_within_2000_units=True)
-    far = xp.from_event("baron", is_within_2000_units=False)
+def test_from_baron_distance_effect():
+    near = xp.from_baron(is_within_2000_units=True)
+    far = xp.from_baron(is_within_2000_units=False)
 
     assert near > far
-
-
-def test_from_event_raises_on_unknown_event():
-    with pytest.raises(ValueError):
-        xp.from_event("ao-shin", whatever=123)
