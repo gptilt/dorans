@@ -26,10 +26,8 @@ def time_increase_factor(game_minutes: float) -> float:
     """
     Calculate the time increase factor based on the game time.
     Reference: https://wiki.leagueoflegends.com/en-us/Death
-    
     Args:
         game_time (float): The current game time in minutes, in decimal form.
-        
     Returns:
         float: The time increase factor.
     """
@@ -64,10 +62,8 @@ def timer(
 ) -> float:
     """
     Calculate the death timer based on the player's level.
-    
     Args:
         level (int): The player's level.
-        
     Returns:
         float: The death timer in seconds.
     """

@@ -1,20 +1,24 @@
-# Doran's 🖩
+# Doran's Package
 
 [![PyPI version](https://badge.fury.io/py/dorans.svg)](https://badge.fury.io/py/dorans)
 [![Publish](https://github.com/gptilt/dorans/actions/workflows/publish.yaml/badge.svg)](https://github.com/gptilt/dorans/actions/workflows/publish.yaml)
 [![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC_BY--NC_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc/4.0/)
 
-[GPTilt's](https://github.com/gptilt) library of tools and calculations for working with League of Legends data.
+<p align="center">
+<img src="./docs/assets/logo.png" alt="Doran's" width="150" height="150">
+</p>
 
-Named after the essential Doran's starting items, this package provides the foundational formulas as described in the [League of Legends Wiki](https://wiki.leagueoflegends.com/).
+*`dorans` is part of the [GPTilt](https://github.com/gptilt) project.*
+
+`dorans` is [Master Doran's](https://wiki.leagueoflegends.com/en-us/Universe:Doran) premier Python package, filled with key formulas that hold the secrets to the game's mechanics!
 
 ## Features
 
-*`dorans` is still level 1!*
+**Disclaimer:** *`dorans` is still level 1!*
 
 For now, here's what you can get:
 
-* **Champion Experience (XP):** Functions to calculate champion level, XP gained from event, etc.
+* **Champion Experience (XP):** Functions to calculate champion level, XP gained from kill, monster, etc.
 * **Death Timer:** Function that computes the death timer from champion level and the game minutes.
 
 Future additions may include utilities for gold calculation, damage analysis, and more!

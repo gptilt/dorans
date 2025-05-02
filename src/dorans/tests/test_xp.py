@@ -21,13 +21,17 @@ def test_total_from_level_raises_out_of_bounds():
 
 
 def test_from_kill_and_assist_return_positive():
-    kill_xp = xp.from_kill(champion_level=6, enemy_level=6)
-    assist_xp = xp.from_assist(champion_level=6, enemy_level=6, number_of_assists=2)
-    
-    assert kill_xp > 0
-    assert assist_xp > 0
-    assert kill_xp > assist_xp
+    kill_xp_lvl1 = xp.from_kill(champion_level=1, enemy_level=1)
+    assist_xp_lvl1 = xp.from_kill(champion_level=1, enemy_level=1, number_of_assists=1)
 
+    assert kill_xp_lvl1 > 0
+    assert assist_xp_lvl1 > 0
+    assert kill_xp_lvl1 > assist_xp_lvl1
+
+    kill_xp_lvl6 = xp.from_kill(champion_level=6, enemy_level=6)
+    assist_xp_lvl6 = xp.from_kill(champion_level=6, enemy_level=6, number_of_assists=2)
+    assert assist_xp_lvl6 * 3 > kill_xp_lvl6
+    
 
 def test_from_dragon_returns_positive_xp():
     _xp = xp.from_dragon(dragon_level=5)
