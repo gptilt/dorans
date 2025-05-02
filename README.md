@@ -18,8 +18,8 @@
 
 For now, here's what you can get:
 
-* **Champion Experience (XP):** Functions to calculate champion level, XP gained from kill, monster, etc.
-* **Death Timer:** Function that computes the death timer from champion level and the game minutes.
+* **XP API:** Compute champion level, XP gained from kill, monster, etc.
+* **Death API:** Computes the death timer from champion level and the game minutes.
 
 Future additions may include utilities for gold calculation, damage analysis, and more!
 
