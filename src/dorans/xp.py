@@ -1,7 +1,7 @@
 PER_LEVEL = lambda i: 100 * i + 80 if i > 1 else 0
 
-PER_KILL_OR_ASSIST = {
-    # By enemy level
+PER_SOLO_KILL_OR_ASSISTED_KILL = {
+    # Enemy Level: (Solo Kill XP, Assisted Kill XP)
     1: (42, 28),
     2: (114, 76),
     3: (144, 125),
@@ -31,8 +31,10 @@ PER_RIFT_HERALD_LEVEL = lambda i: 306 if i < 8 else 312  # Simplification
 def total_from_level(level: int) -> int:
     """
     Get the XP required to reach the given level.
-    :param level: The level to get the XP for.
-    :return: The XP required to reach the given level.
+    Args:
+        level (int): The level to get the XP for.
+    Returns:
+        int: The XP required to reach the given level.
     """
     if level < 1 or level > 18:
         raise ValueError("Level must be between 1 and 18.")
@@ -42,8 +44,10 @@ def total_from_level(level: int) -> int:
 def level_from_xp(xp: int) -> int:
     """
     Get the level from the given XP.
-    :param xp: The XP to determine the level for.
-    :return: The level corresponding to the given XP.
+    Args:
+        xp (int): The XP to determine the level for.
+    Returns:
+        int: The level corresponding to the given XP.
     """
     if xp < 0:
         raise ValueError("XP must be a non-negative integer.")
@@ -60,9 +64,11 @@ def takedown_multiplier(
 ) -> float:
     """
     Get the XP multiplier for a takedown.
-    :param champion_level: The level of the champion participating in the takedown.
-    :param enemy_level: The level of the enemy.
-    :return: The XP multiplier for the takedown.
+    Args:
+        champion_level (int): The level of the champion participating in the takedown.
+        enemy_level (int): The level of the enemy.
+    Returns:
+        float: The XP multiplier for the takedown.
     """
     level_advantage = champion_level - enemy_level
     if level_advantage < -2:
@@ -80,44 +86,34 @@ def takedown_multiplier(
 def from_kill(
     champion_level: int,
     enemy_level: int,
-):
+    number_of_assists: int = 0,
+) -> float:
     """
-    Get the XP from a kill.
-    :param champion_level: The level of the champion participating in the kill.
-    :param enemy_level: The level of the enemy.
-    :return: The XP for the kill.
-    """
-    return (
-        PER_KILL_OR_ASSIST[enemy_level][0]
-        * takedown_multiplier(champion_level, enemy_level)
-    )
-
-def from_assist(
-    champion_level: int,
-    enemy_level: int,
-    number_of_assists: int
-):
-    """
-    Get the XP from an assist.
-    :param champion_level: The level of the champion participating in the assist.
-    :param enemy_level: The level of the enemy.
-    :param number_of_assists: The number of assists.
-    :return: The XP for the assist.
+    Get the takedown XP gained by a single player,
+    from a solo kill or assisted kill.
+    Args:
+        champion_level (int): The level of the champion participating in the kill.
+        enemy_level (int): The level of the enemy.
+        number_of_assists (int): The number of players assisting the kill,
+            not including the killer. By default, is 0, which implies a solo kill.
+    Returns:
+        float: The XP for the kill.
     """
     return (
-        PER_KILL_OR_ASSIST[enemy_level][1]
+        PER_SOLO_KILL_OR_ASSISTED_KILL[enemy_level][min(number_of_assists, 1)]
         * takedown_multiplier(champion_level, enemy_level)
-        / number_of_assists
-    )
+    ) / (1 + number_of_assists)
 
 
-def from_dragon(dragon_level: int):
+def from_dragon(dragon_level: int) -> int:
     """
-    Get the XP from a dragon.
-    :param dragon_level: The level of the dragon.
-    :return: The XP for the dragon.
+    Get the total XP gained from a dragon.
+    Args:
+        dragon_level (int): The level of the dragon.
+    Returns:
+        int: The total XP for the dragon.
 
-    TODO: From the Wiki:
+    **TODO:** From the Wiki:
     "If the team that slays a dragon has a lower average level
     than that of their opponents,
     they receive 25% bonus experience per average level difference.
@@ -129,51 +125,58 @@ def from_dragon(dragon_level: int):
     return PER_DRAGON_LEVEL(dragon_level)
 
 
-def from_elder_dragon(elder_dragon_level: int):
+def from_elder_dragon(elder_dragon_level: int) -> int:
     """
-    Get the XP from an elder dragon.
-    :param elder_dragon_level: The level of the elder dragon.
-    :return: The XP for the elder dragon.
+    Get the total XP gained from the Elder Dragon.
+    Args:
+        elder_dragon_level (int): The level of the Elder Dragon.
+    Returns:
+        int: The total XP for the Elder Dragon.
     """
     return PER_ELDER_DRAGON_LEVEL(elder_dragon_level)
 
 
-def from_grub(grub_level: int):
+def from_grub(grub_level: int) -> int:
     """
-    Get the XP from a grub.
-    :param grub_level: The level of the grub.
-        The Grub's level is the average of
-        the two teams' levels at any point in the game.
-    :return: The XP for the grub.
+    Get the total XP from a single grub.
+    Args:
+        grub_level (int): The level of the grub.
+            The Grub's level is the average of
+            the two teams' levels at any point in the game.
+    Returns:
+        int: The total XP for the grub.
     """
     return PER_GRUB_LEVEL(grub_level)
 
 
-def from_rift_herald(rift_herald_level: int):
+def from_rift_herald(rift_herald_level: int) -> int:
     """
-    Get the XP from a rift herald.
-    :param rift_herald_level: The level of the rift herald.
-        The Rift Herald's level is the average of
-        the two teams' levels when she spawns at 14 minutes.
-    :return: The XP for the rift herald.
+    Get the total XP gained from Rift Herald.
+    Args:
+        rift_herald_level: The level of the Rift Herald.
+            The Rift Herald's level is the average of
+            the two teams' levels when she spawns at 14 minutes.
+    Returns:
+        int: The total XP for the Rift Herald.
     """
     return PER_RIFT_HERALD_LEVEL(rift_herald_level)
 
 
-def from_baron(
-    is_within_2000_units: bool
-):
+def from_baron(is_within_2000_units: bool) -> int:
     """
-    Get the XP from a baron.
-    :param is_within_2000_units: Whether the champion is within 2000 units of the baron.
-    :return: The XP for the baron.
+    Get the total XP gained from Baron Nashor.
+    Args:
+        is_within_2000_units (bool): Whether the champion is within 2000 units of the baron.
+    Returns:
+        int: The total XP for the Baron Nashor.
     """
     return 1400 if is_within_2000_units == True else 600
 
 
-def from_control_ward():
+def from_control_ward() -> float:
     """
-    Get the XP from a control ward.
-    :return: The XP for the control ward.
+    Get the total XP from a control ward.
+    Returns:
+        float: The XP for the control ward.
     """
     return 38.0  # Simplification: players can get assist XP from control wards
