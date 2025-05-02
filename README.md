@@ -39,8 +39,7 @@ from dorans import xp
 print(xp.total_from_level(17))
 # Output: 16480
 
-print(xp.from_event(
-    "assist",
+print(xp.from_kill(
     champion_level=6,
     enemy_level=6,
     number_of_assists=2
