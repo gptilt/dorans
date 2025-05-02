@@ -8,9 +8,9 @@
 <img src="./docs/assets/logo.png" alt="Doran's" width="150" height="150">
 </p>
 
-*`dorans` is part of the [GPTilt](https://github.com/gptilt) project.*
-
 `dorans` is [Master Doran's](https://wiki.leagueoflegends.com/en-us/Universe:Doran) premier Python package, filled with key formulas that hold the secrets to the game's mechanics!
+
+*`dorans` is part of the [GPTilt](https://github.com/gptilt) project.*
 
 ## Features
 
