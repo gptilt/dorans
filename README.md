@@ -1,14 +1,12 @@
 # Doran's Package
 
-<p align="center">
-<img src="./docs/assets/logo.png" alt="Doran's" width="128" height="128">
-</p>
-
----
-
 [![PyPI version](https://badge.fury.io/py/dorans.svg)](https://badge.fury.io/py/dorans)
 [![Publish](https://github.com/gptilt/dorans/actions/workflows/publish.yaml/badge.svg)](https://github.com/gptilt/dorans/actions/workflows/publish.yaml)
 [![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC_BY--NC_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc/4.0/)
+
+<p align="center">
+<img src="./docs/assets/logo.png" alt="Doran's" width="128" height="128">
+</p>
 
 *`dorans` is part of the [GPTilt](https://github.com/gptilt) project.*
 
