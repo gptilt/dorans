@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Camp and structure coordinates from [CDragon](https://www.communitydragon.org/).
 - Unbearably fast runtime type-checking with [`beartype`](https://github.com/beartype/beartype).
 
+### Changed
+
+- Updated XP values for season 26.
+
 ## [0.2.5](https://pypi.org/project/dorans/0.2.5/) - 2025-05-02
 
 ### Added
