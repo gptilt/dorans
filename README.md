@@ -12,6 +12,8 @@
 
 *`dorans` is part of the [GPTilt](https://github.com/gptilt) project.*
 
+## [Changelog](CHANGELOG.md)
+
 ## Features
 
 **Disclaimer:** *`dorans` is still level 1!*

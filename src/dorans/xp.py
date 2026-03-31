@@ -22,10 +22,10 @@ PER_SOLO_KILL_OR_ASSISTED_KILL = {
     18: (990, 990)
 }
 
-PER_DRAGON_LEVEL = lambda i: 30 + i * 20 if i < 15 else 330
-PER_ELDER_DRAGON_LEVEL = lambda i: 530 + i * 20 if i < 15 else 830
-PER_GRUB_LEVEL = lambda i: 75 * 1.02 ** (i - 4)  # 2% increase per level over 4
-PER_RIFT_HERALD_LEVEL = lambda i: 306 if i < 8 else 312  # Simplification
+PER_DRAGON_LEVEL = lambda i: 40 + i * 20
+PER_ELDER_DRAGON_LEVEL = 650
+PER_GRUB_LEVEL = 65
+PER_RIFT_HERALD_LEVEL = 240
 
 
 def total_from_level(level: int) -> int:
@@ -122,6 +122,8 @@ def from_dragon(dragon_level: int) -> int:
     equal to 15% per number of levels behind the dragon squared,
     up to a maximum of 200%."
     """
+    assert dragon_level >= 6
+    assert dragon_level <= 18
     return PER_DRAGON_LEVEL(dragon_level)
 
 
@@ -133,6 +135,8 @@ def from_elder_dragon(elder_dragon_level: int) -> int:
     Returns:
         int: The total XP for the Elder Dragon.
     """
+    assert elder_dragon_level >= 13
+    assert elder_dragon_level <= 18
     return PER_ELDER_DRAGON_LEVEL(elder_dragon_level)
 
 
@@ -146,6 +150,8 @@ def from_grub(grub_level: int) -> int:
     Returns:
         int: The total XP for the grub.
     """
+    assert grub_level >= 7
+    assert grub_level <= 18
     return PER_GRUB_LEVEL(grub_level)
 
 
@@ -159,18 +165,22 @@ def from_rift_herald(rift_herald_level: int) -> int:
     Returns:
         int: The total XP for the Rift Herald.
     """
+    assert rift_herald_level >= 9
+    assert rift_herald_level <= 18
     return PER_RIFT_HERALD_LEVEL(rift_herald_level)
 
 
-def from_baron(is_within_2000_units: bool) -> int:
+def from_baron() -> int:
     """
     Get the total XP gained from Baron Nashor.
     Args:
         is_within_2000_units (bool): Whether the champion is within 2000 units of the baron.
     Returns:
         int: The total XP for the Baron Nashor.
+    
+    TODO: Players on the losing team gain 25% increased experience per level behind they are, capped at 2x.
     """
-    return 1400 if is_within_2000_units == True else 600
+    return 650
 
 
 def from_control_ward() -> float:
