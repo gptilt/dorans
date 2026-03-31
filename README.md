@@ -18,8 +18,9 @@
 
 **Disclaimer:** *`dorans` is still level 1!*
 
-For now, here's what you can get:
+Here's what you can get:
 
+* **Camp and building coordinates:** Coordinates for all camps and buildings, like the Dragon pit and the red team Nexus!
 * **XP API:** Compute champion level, XP gained from kill, monster, etc.
 * **Death API:** Computes the death timer from champion level and the game minutes.
 
