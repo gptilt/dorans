@@ -4,12 +4,14 @@ build-backend = "hatchling.build"
 
 [project]
 name = "dorans"
-version = "0.2.5"
+version = "0.2.6"
 readme = "README.md"
 description = "Utilities for the League of Legends Community"
 license = {file = "LICENSE"}
 requires-python = ">=3.10"
-dependencies = []
+dependencies = [
+    "beartype>=0.22.9"
+]
 
 [project.optional-dependencies]
 test = [

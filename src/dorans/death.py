@@ -22,7 +22,7 @@ BASE_RESPAWN_WAIT_TIME_PER_LEVEL = {
 }
 
 
-def time_increase_factor(game_minutes: float) -> float:
+def time_increase_factor(game_minutes: int | float) -> int | float:
     """
     Calculate the time increase factor based on the game time.
     Reference: https://wiki.leagueoflegends.com/en-us/Death
@@ -58,8 +58,8 @@ def time_increase_factor(game_minutes: float) -> float:
 
 def timer(
     level: int,
-    game_minutes: float = 0,
-) -> float:
+    game_minutes: int | float = 0,
+) -> int | float:
     """
     Calculate the death timer based on the player's level.
     Args:

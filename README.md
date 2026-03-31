@@ -8,18 +8,21 @@
 <img src="./docs/assets/logo.png" alt="Doran's" width="150" height="150">
 </p>
 
+`dorans` is [Master Doran's](https://wiki.leagueoflegends.com/en-us/Universe:Doran) premier Python package, filled with key formulas that hold the secrets to the game's mechanics!
+
 *`dorans` is part of the [GPTilt](https://github.com/gptilt) project.*
 
-`dorans` is [Master Doran's](https://wiki.leagueoflegends.com/en-us/Universe:Doran) premier Python package, filled with key formulas that hold the secrets to the game's mechanics!
+## [Changelog](CHANGELOG.md)
 
 ## Features
 
 **Disclaimer:** *`dorans` is still level 1!*
 
-For now, here's what you can get:
+Here's what you can get:
 
-* **Champion Experience (XP):** Functions to calculate champion level, XP gained from kill, monster, etc.
-* **Death Timer:** Function that computes the death timer from champion level and the game minutes.
+* **Camp and building coordinates:** Coordinates for all camps and buildings, like the Dragon pit and the red team Nexus!
+* **XP API:** Compute champion level, XP gained from kill, monster, etc.
+* **Death API:** Computes the death timer from champion level and the game minutes.
 
 Future additions may include utilities for gold calculation, damage analysis, and more!
 
@@ -39,8 +42,7 @@ from dorans import xp
 print(xp.total_from_level(17))
 # Output: 16480
 
-print(xp.from_event(
-    "assist",
+print(xp.from_kill(
     champion_level=6,
     enemy_level=6,
     number_of_assists=2

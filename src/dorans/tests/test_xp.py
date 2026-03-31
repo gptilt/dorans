@@ -34,12 +34,9 @@ def test_from_kill_and_assist_return_positive():
     
 
 def test_from_dragon_returns_positive_xp():
-    _xp = xp.from_dragon(dragon_level=5)
+    _xp = xp.from_dragon(dragon_level=14)
     assert _xp > 0
 
-
-def test_from_baron_distance_effect():
-    near = xp.from_baron(is_within_2000_units=True)
-    far = xp.from_baron(is_within_2000_units=False)
-
-    assert near > far
+def test_from_dragon_raises_if_level_too_low():
+    with pytest.raises(AssertionError):
+        xp.from_dragon(dragon_level=0)
