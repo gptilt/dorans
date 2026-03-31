@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [0.2.7](https://pypi.org/project/dorans/0.2.7/) - 2026-03-31
+
+### Changed
+
+- Fixed [issue with inaccurate death timers](https://github.com/gptilt/dorans/issues/18).
+
 ## [0.2.6](https://pypi.org/project/dorans/0.2.6/) - 2026-03-31
 
 ### Added

@@ -31,27 +31,25 @@ def time_increase_factor(game_minutes: int | float) -> int | float:
     Returns:
         float: The time increase factor.
     """
-    if game_minutes < 0:
-        raise ValueError("Game time cannot be negative.")
-
-    def tif(game_minutes, multiplier, milestone):
-        previous_increase = tif(milestone, multiplier, milestone - 15) if milestone > 15 else 0
-        return previous_increase + ceil(2 * (game_minutes - milestone)) * multiplier / 100
+    game_minutes += 0.5  # Adjust for documented values
 
     if game_minutes < 15:
         return 0
     elif game_minutes < 30:
+        previous_increase = 0
         multiplier = 0.425
         milestone = 15
-        factor = tif(game_minutes, multiplier, milestone)
+        factor = previous_increase + ceil(2 * (game_minutes - milestone)) * multiplier / 100
     elif game_minutes < 45:
+        previous_increase = 0.1275
         multiplier = 0.3
         milestone = 30
-        factor = tif(game_minutes, multiplier, milestone)
+        factor = previous_increase + ceil(2 * (game_minutes - milestone)) * multiplier / 100
     else:
+        previous_increase = 0.2175
         multiplier = 1.45
         milestone = 45
-        factor = tif(game_minutes, multiplier, milestone)
+        factor = previous_increase + ceil(2 * (game_minutes - milestone)) * multiplier / 100
 
     return min(0.5, factor)  # TIF is capped at 50%
 
@@ -69,5 +67,7 @@ def timer(
     """
     if level < 1 or level > 18:
         raise ValueError("Level must be between 1 and 18.")
+    if game_minutes < 0:
+        raise ValueError("Game time cannot be negative.")
     
     return BASE_RESPAWN_WAIT_TIME_PER_LEVEL[level] * (1 + time_increase_factor(game_minutes))
