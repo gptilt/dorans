@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added
+
+- `patch` module with `get_patches` function for getting patches and their release timestamps.
+
 ## [0.2.7](https://pypi.org/project/dorans/0.2.7/) - 2026-03-31
 
 ### Changed
